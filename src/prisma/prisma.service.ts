@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnModuleInit, INestApplication } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PrismaClient } from '@prisma/client';
 
@@ -20,12 +20,9 @@ export class PrismaService extends PrismaClient {
       return;
     }
 
-    /** Cleaning Database for integration testing (prevent double uniqueIds) */
-    const models = Reflect.ownKeys(this).filter((key) => key[0] !== '_');
-    const modelNames = models.filter(model => model.toString() !== '$extends' && model.toString() !== 'Symbol()');
-
-    return Promise.all(
-      modelNames.map((modelKey: string) => this[modelKey].deleteMany()),
-    );
+    // Cleaning Database for testing
+    return this.$transaction([
+      this.user.deleteMany()
+    ]);
   }
 }
