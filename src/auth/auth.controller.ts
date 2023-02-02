@@ -3,7 +3,7 @@ import { Get, HttpCode, Put, UseGuards } from '@nestjs/common/decorators';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { GetCurrentUser, GetCurrentUserId, Public, RefreshTokenGuard } from '../common';
-import { ConfirmRegistrationCommand, DeleteUserCommand, LogoutUserCommand, RefreshTokenCommand, SigninUserCommand, SignupUserCommand } from './commands';
+import { ConfirmRegistrationCommand, DeleteUserCommand, LogoutUserCommand, RefreshTokenCommand, ResendConfirmRegistrationCommand, SigninUserCommand, SignupUserCommand } from './commands';
 import { SigninUserRequest, SignupUserRequest, UpdateUserEmailRequest, UpdateUserPasswordRequest, User } from './model';
 import { Tokens } from './types';
 import { GetUserByEmailQuery, GetUserQuery } from './queries/impl';
@@ -83,6 +83,15 @@ export class AuthController {
   confirmRegistration(@GetCurrentUser('email') confirmationMail: string): Promise<void> {
     return this.commandBus.execute<ConfirmRegistrationCommand, void>(
       new ConfirmRegistrationCommand(confirmationMail)
+    );
+  }
+
+  @Public()
+  @Post('confirm-registration/:email')
+  @HttpCode(HttpStatus.OK)
+  resendConfirmationUserRegistration(@Param('email') email: string) {
+    return this.commandBus.execute<ResendConfirmRegistrationCommand, void>(
+      new ResendConfirmRegistrationCommand(email)
     );
   }
 
