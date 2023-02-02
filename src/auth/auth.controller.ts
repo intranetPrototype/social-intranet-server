@@ -6,7 +6,7 @@ import { GetCurrentUser, GetCurrentUserId, Public, RefreshTokenGuard } from '../
 import { ConfirmRegistrationCommand, DeleteUserCommand, LogoutUserCommand, RefreshTokenCommand, SigninUserCommand, SignupUserCommand } from './commands';
 import { SigninUserRequest, SignupUserRequest, UpdateUserEmailRequest, UpdateUserPasswordRequest, User } from './model';
 import { Tokens } from './types';
-import { GetUserByEmailQuery } from './queries/impl';
+import { GetUserByEmailQuery, GetUserQuery } from './queries/impl';
 import { UpdateUserEmailCommand } from './commands/impl/update-user-email.command';
 import { UpdateUserPasswordCommand } from './commands/impl/update-user-password.command';
 import { UseInterceptors } from '@nestjs/common/decorators/core/use-interceptors.decorator';
@@ -31,6 +31,18 @@ export class AuthController {
   getUserByEmail(@Param('email') email: string): Promise<User> {
     return this.queryBus.execute<GetUserByEmailQuery, User>(
       new GetUserByEmailQuery(email)
+    );
+  }
+
+  @UseInterceptors(ClassSerializerInterceptor)
+  @Get('user')
+  @ApiOkResponse({
+    description: 'Get user by token',
+    type: User
+  })
+  getUser(@GetCurrentUserId() userId: number): Promise<User> {
+    return this.queryBus.execute<GetUserQuery, User>(
+      new GetUserQuery(userId)
     );
   }
 

@@ -46,7 +46,7 @@ export class AuthRepository {
     await this.prismaService.user.update({
       where: {
         email,
-      }, data : {
+      }, data: {
         confirmed: true
       }
     });
@@ -106,7 +106,7 @@ export class AuthRepository {
       });
 
       return this.mapToUser(user);
-    } catch(error) {
+    } catch (error) {
       if (error instanceof PrismaClientKnownRequestError) {
         if (error.code === 'P2002') {
           throw new ForbiddenException('Credentials already taken.');
