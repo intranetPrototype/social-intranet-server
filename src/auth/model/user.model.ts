@@ -1,15 +1,24 @@
 import { AggregateRoot } from "@nestjs/cqrs";
+import { ApiProperty } from "@nestjs/swagger/dist/decorators";
 import { UserRole } from "@prisma/client";
 import { User as DbUser } from '@prisma/client';
 import { Exclude } from "class-transformer";
 
 export class User extends AggregateRoot {
 
+  @ApiProperty({
+    description: 'User id',
+    default: 1
+  })
   private readonly id: number;
 
   @Exclude()
   private readonly hash: string;
 
+  @ApiProperty({
+    description: 'User email',
+    default: 'user@email.de'
+  })
   private readonly email: string;
 
   @Exclude()
@@ -18,11 +27,19 @@ export class User extends AggregateRoot {
   @Exclude()
   private readonly updatedAt: Date;
 
+  @ApiProperty({
+    description: 'User roles',
+    default: [UserRole.STANDARD]
+  })
   private readonly role: UserRole[];
 
   @Exclude()
   private readonly hashedRt: string;
 
+  @ApiProperty({
+    description: 'Has user confirmed registration',
+    default: false
+  })
   private readonly confirmed: boolean;
 
   constructor({ id, hash, email, role, hashedRt, createdAt, updatedAt, confirmed }: DbUser) {

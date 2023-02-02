@@ -11,8 +11,10 @@ import { UpdateUserEmailCommand } from './commands/impl/update-user-email.comman
 import { UpdateUserPasswordCommand } from './commands/impl/update-user-password.command';
 import { UseInterceptors } from '@nestjs/common/decorators/core/use-interceptors.decorator';
 import { ConfirmEmailTokenGuard } from './guards';
+import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
 @Controller()
+@ApiTags('Auth')
 export class AuthController {
 
   constructor(
@@ -22,6 +24,10 @@ export class AuthController {
 
   @UseInterceptors(ClassSerializerInterceptor)
   @Get('user/:email')
+  @ApiOkResponse({
+    description: 'Get user by email response',
+    type: User
+  })
   getUserByEmail(@Param('email') email: string): Promise<User> {
     return this.queryBus.execute<GetUserByEmailQuery, User>(
       new GetUserByEmailQuery(email)
@@ -30,6 +36,10 @@ export class AuthController {
 
   @Public()
   @Post('signup')
+  @ApiOkResponse({
+    description: 'Signup user response',
+    type: Tokens
+  })
   signup(@Body() signupUserRequest: SignupUserRequest): Promise<Tokens> {
     return this.commandBus.execute<SignupUserCommand, Tokens>(
       new SignupUserCommand(signupUserRequest)
@@ -39,6 +49,11 @@ export class AuthController {
   @Public()
   @Post('signin')
   @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({
+    description: 'Signin user response',
+    type: Tokens,
+    status: 200
+  })
   signin(@Body() signinUserRequest: SigninUserRequest): Promise<Tokens> {
     return this.commandBus.execute<SigninUserCommand, Tokens>(
       new SigninUserCommand(signinUserRequest)
@@ -49,6 +64,10 @@ export class AuthController {
   @UseGuards(ConfirmEmailTokenGuard)
   @Post('confirm-registration')
   @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({
+    description: 'Confirm user registration',
+    status: 200
+  })
   confirmRegistration(@GetCurrentUser('email') confirmationMail: string): Promise<void> {
     return this.commandBus.execute<ConfirmRegistrationCommand, void>(
       new ConfirmRegistrationCommand(confirmationMail)
@@ -57,6 +76,10 @@ export class AuthController {
 
   @Post('logout')
   @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({
+    description: 'Logout user response',
+    status: 200
+  })
   logout(@GetCurrentUserId() userId: number): Promise<void> {
     return this.commandBus.execute<LogoutUserCommand, void>(
       new LogoutUserCommand({ userId })
@@ -65,6 +88,11 @@ export class AuthController {
 
   @Put('user/email')
   @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({
+    description: 'Update user email response',
+    type: User,
+    status: 200
+  })
   updateEmail(
     @GetCurrentUserId() userId: number,
     @Body() updateUserEmailRequest: UpdateUserEmailRequest
@@ -79,10 +107,15 @@ export class AuthController {
 
   @Put('user/password')
   @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({
+    description: 'Update user password response',
+    type: User,
+    status: 200
+  })
   updatePassword(
     @GetCurrentUserId() userId: number,
     @Body() updateUserPassowrdRequest: UpdateUserPasswordRequest
-  ) {
+  ): Promise<User> {
     return this.commandBus.execute<UpdateUserPasswordCommand, User>(
       new UpdateUserPasswordCommand(
         userId,
@@ -95,6 +128,11 @@ export class AuthController {
   @UseGuards(RefreshTokenGuard)
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({
+    description: 'Refresh user tokens response',
+    type: Tokens,
+    status: 200
+  })
   refreshTokens(
     @GetCurrentUserId() userId: number,
     @GetCurrentUser('refreshToken') refreshToken: string
@@ -106,6 +144,9 @@ export class AuthController {
 
   @Roles('ADMIN')
   @Delete('delete/:email')
+  @ApiOkResponse({
+    description: 'Delete user response (only for admin)',
+  })
   deleteUser(@Param('email') email: string): Promise<void> {
     return this.commandBus.execute<DeleteUserCommand, void>(
       new DeleteUserCommand(email)
