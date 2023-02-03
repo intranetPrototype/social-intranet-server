@@ -40,7 +40,7 @@ export class AuthRepository {
     return this.mapToUser(user);
   }
 
-  async confirmRegistration(email: string): Promise<void> {
+  async confirmRegistration(email: string): Promise<User> {
     const user = await this.findUserByEmail(email);
 
     await this.prismaService.user.update({
@@ -50,6 +50,8 @@ export class AuthRepository {
         confirmed: true
       }
     });
+
+    return user;
   }
 
   async updateUserEmail(userId: number, email: string): Promise<User> {

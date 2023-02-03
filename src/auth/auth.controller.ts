@@ -78,10 +78,11 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({
     description: 'Confirm user registration',
+    type: User,
     status: 200
   })
-  confirmRegistration(@GetCurrentUser('email') confirmationMail: string): Promise<void> {
-    return this.commandBus.execute<ConfirmRegistrationCommand, void>(
+  confirmRegistration(@GetCurrentUser('email') confirmationMail: string): Promise<User> {
+    return this.commandBus.execute<ConfirmRegistrationCommand, User>(
       new ConfirmRegistrationCommand(confirmationMail)
     );
   }
