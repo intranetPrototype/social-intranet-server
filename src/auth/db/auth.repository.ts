@@ -69,12 +69,12 @@ export class AuthRepository {
     return this.mapToUser(user);
   }
 
-  async updateUserHash(userId: number, hash: string): Promise<User> {
-    await this.findUserById(userId);
+  async updateUserHash(email: string, hash: string): Promise<User> {
+    await this.findUserByEmail(email);
 
     const user = await this.prismaService.user.update({
       where: {
-        id: userId
+        email: email
       },
       data: {
         hash
