@@ -16,6 +16,18 @@ export class User extends AggregateRoot {
   private readonly hash: string;
 
   @ApiProperty({
+    description: 'User first name',
+    default: 'John'
+  })
+  private readonly firstName: string;
+
+  @ApiProperty({
+    description: 'User last name',
+    default: 'Doe'
+  })
+  private readonly lastName: string;
+
+  @ApiProperty({
     description: 'User email',
     default: 'user@email.de'
   })
@@ -42,7 +54,7 @@ export class User extends AggregateRoot {
   })
   private readonly confirmed: boolean;
 
-  constructor({ id, hash, email, role, hashedRt, createdAt, updatedAt, confirmed }: DbUser) {
+  constructor({ id, hash, firstName, lastName, email, role, hashedRt, createdAt, updatedAt, confirmed }: DbUser) {
     super();
 
     this.id = id;
@@ -50,6 +62,8 @@ export class User extends AggregateRoot {
     this.role = role;
     this.email = email;
     this.hashedRt = hashedRt;
+    this.lastName = lastName;
+    this.firstName = firstName;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
     this.confirmed = confirmed;
@@ -65,6 +79,14 @@ export class User extends AggregateRoot {
 
   getRole(): UserRole[] {
     return this.role;
+  }
+
+  getFirstName(): string {
+    return this.firstName;
+  }
+
+  getLastName(): string {
+    return this.lastName;
   }
 
   getEmail(): string {

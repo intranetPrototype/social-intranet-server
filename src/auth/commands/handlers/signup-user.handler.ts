@@ -19,10 +19,12 @@ export class SignupUserHandler implements ICommandHandler<SignupUserCommand> {
   ) { }
 
   async execute({ signupUserRequest }: SignupUserCommand): Promise<Tokens> {
-    const { email, password } = signupUserRequest;
+    const { firstName, lastName, email, password } = signupUserRequest;
     const hash = await this.bcryptService.hashData(password);
 
     const user = await this.authRepository.signupUser({
+      firstName,
+      lastName,
       email,
       hash,
       hashedRt: null,
