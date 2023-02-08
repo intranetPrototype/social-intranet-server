@@ -3,8 +3,8 @@ import { Get, HttpCode, Put, UseGuards } from '@nestjs/common/decorators';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { GetCurrentUser, GetCurrentUserId, Public, RefreshTokenGuard } from '../common';
-import { ConfirmRegistrationCommand, DeleteUserCommand, LogoutUserCommand, RefreshTokenCommand, ResendConfirmRegistrationCommand, SigninUserCommand, SignupUserCommand } from './commands';
-import { SigninUserRequest, SignupUserRequest, UpdateUserEmailRequest, UpdateUserPasswordRequest, User } from './model';
+import { ConfirmRegistrationCommand, DeleteUserCommand, LogoutUserCommand, RefreshTokenCommand, ResendConfirmRegistrationCommand, SendUpdatePasswordMailCommand, SigninUserCommand, SignupUserCommand } from './commands';
+import { SendUpdatePasswordMailRequest, SigninUserRequest, SignupUserRequest, UpdateUserEmailRequest, UpdateUserPasswordRequest, User } from './model';
 import { Tokens } from './types';
 import { GetUserByEmailQuery, GetUserQuery } from './queries/impl';
 import { UpdateUserEmailCommand } from './commands/impl/update-user-email.command';
@@ -127,6 +127,22 @@ export class AuthController {
     );
   }
 
+  @Public()
+  @Post('user/password')
+  @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({
+    description: 'Send email with token to update password'
+  })
+  sendUpdatePasswordMail(
+    @Body() sendUpdatePasswordMailRequest: SendUpdatePasswordMailRequest
+  ): Promise<void> {
+    return this.commandBus.execute<SendUpdatePasswordMailCommand, void>(
+      new SendUpdatePasswordMailCommand(sendUpdatePasswordMailRequest.email)
+    );
+  }
+
+  @Public()
+  @UseGuards(ConfirmEmailTokenGuard)
   @Put('user/password')
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({
@@ -135,13 +151,13 @@ export class AuthController {
     status: 200
   })
   updatePassword(
-    @GetCurrentUserId() userId: number,
-    @Body() updateUserPassowrdRequest: UpdateUserPasswordRequest
+    @GetCurrentUser('email') email: string,
+    @Body() updatePasswordRequest: UpdateUserPasswordRequest
   ): Promise<User> {
     return this.commandBus.execute<UpdateUserPasswordCommand, User>(
       new UpdateUserPasswordCommand(
-        userId,
-        updateUserPassowrdRequest
+        email,
+        updatePasswordRequest
       )
     );
   }

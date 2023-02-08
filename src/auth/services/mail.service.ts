@@ -1,7 +1,7 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
-import { SendConfirmationEmailEvent } from '../events/impl';
-import { SendConfirmationEmailDto } from '../model';
+import { SendConfirmationEmailEvent, SendResetPasswordEmailEvent } from '../events/impl';
+import { SendConfirmationEmailDto, SendResetPasswordEmailDto } from '../model';
 
 @Injectable()
 export class MailService {
@@ -14,6 +14,13 @@ export class MailService {
     return this.mailServerClient.emit(
       'send_confirmation_email',
       new SendConfirmationEmailEvent(sendConfirmationEmailDto.email, sendConfirmationEmailDto.token)
+    );
+  }
+
+  sendResetPasswordEmail(sendResetPasswordEmailDto: SendResetPasswordEmailDto) {
+    return this.mailServerClient.emit(
+      'send_reset_password_email',
+      new SendResetPasswordEmailEvent(sendResetPasswordEmailDto.email, sendResetPasswordEmailDto.token)
     );
   }
 }
