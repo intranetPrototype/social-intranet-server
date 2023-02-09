@@ -18,7 +18,11 @@ import { APP_GUARD } from '@nestjs/core';
     ClientsModule.register([
       {
         name: 'MAIL_SERVER',
-        transport: Transport.TCP
+        transport: Transport.TCP,
+        options: {
+          host: process.env.MAIL_SERVER_HOST,
+          port: 3001
+        }
       }
     ])
   ],

@@ -1,26 +1,5 @@
 version: '3'
 services:
-  dev-db:
-    image: postgres:15
-    ports:
-      - 5432:5432
-    environment:
-      POSTGRES_USER: "${POSTGRES_USER}"
-      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
-      POSTGRES_DB: "${POSTGRES_DB}"
-    networks:
-      - social-intranet
-  test-db:
-    image: postgres:15
-    ports:
-      - 5435:5432
-    environment:
-      POSTGRES_USER: "${POSTGRES_USER}"
-      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
-      POSTGRES_DB: "${POSTGRES_DB}"
-    networks:
-      - social-intranet
-
   bwp-server:
     image: bwpcontainerregistry.azurecr.io/bwp-server
     ports:
@@ -42,7 +21,7 @@ services:
   bwp-fe:
     image: bwpcontainerregistry.azurecr.io/bwp-fe
     ports:
-      - 4200:4200
+      - 80:80
     networks:
       - social-intranet
 
