@@ -21,30 +21,30 @@ services:
     networks:
       - social-intranet
 
-  bwp-server:
-    image: bwpcontainerregistry.azurecr.io/bwp-server
-    ports:
-      - 3000:3000
-    env_file:
-      - .env.production
-    networks:
-      - social-intranet
+#  bwp-server:
+#    image: bwpcontainerregistry.azurecr.io/bwp-server
+#    ports:
+#      - 3000:3000
+#    env_file:
+#      - .env.production
+#    networks:
+#      - social-intranet
 
-  bwp-mail-server:
-    image: bwpcontainerregistry.azurecr.io/bwp-mail-server
-    ports:
-      - 3001:3001
-    env_file:
-      - .env.production
-    networks:
-      - social-intranet
+#  bwp-mail-server:
+#    image: bwpcontainerregistry.azurecr.io/bwp-mail-server
+#    ports:
+#      - 3001:3001
+#    env_file:
+#      - .env.production
+#    networks:
+#      - social-intranet
 
-  bwp-fe:
-    image: bwpcontainerregistry.azurecr.io/bwp-fe
-    ports:
-      - 4200:4200
-    networks:
-      - social-intranet
+#  bwp-fe:
+#    image: bwpcontainerregistry.azurecr.io/bwp-fe
+#    ports:
+#      - 4200:4200
+#    networks:
+#      - social-intranet
 
 networks:
   social-intranet:
