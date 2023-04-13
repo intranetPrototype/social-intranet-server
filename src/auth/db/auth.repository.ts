@@ -4,6 +4,7 @@ import { CreateUserDto, User } from "../model";
 import { User as DbUser } from '@prisma/client';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import { InternalServerErrorException } from '@nestjs/common/exceptions';
+import { timeStamp } from 'console';
 
 @Injectable()
 export class AuthRepository {
@@ -103,7 +104,13 @@ export class AuthRepository {
     try {
       const user = await this.prismaService.user.create({
         data: {
-          ...dto
+          ...dto,
+        }
+      });
+
+      await this.prismaService.profile.create({
+        data: {
+          userId: user.id
         }
       });
 
