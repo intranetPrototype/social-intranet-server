@@ -4,6 +4,8 @@ import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
 import { APP_GUARD } from '@nestjs/core';
 import { AccessTokenGuard, RolesGuard } from './common';
+import { ProfileModule } from './profile/profile.module';
+import { FileServerModule } from './file-server/file-server.module';
 
 @Module({
   imports: [
@@ -11,7 +13,9 @@ import { AccessTokenGuard, RolesGuard } from './common';
     ConfigModule.forRoot({
       isGlobal: true
     }),
-    AuthModule
+    AuthModule,
+    ProfileModule,
+    FileServerModule
   ],
   providers: [
     {
@@ -24,4 +28,4 @@ import { AccessTokenGuard, RolesGuard } from './common';
     }
   ]
 })
-export class AppModule {}
+export class AppModule { }
