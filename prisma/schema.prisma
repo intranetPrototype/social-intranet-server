@@ -23,7 +23,23 @@ model User {
   hashedRt  String?
   confirmed Boolean    @default(false)
 
+  Profile Profile?
+
   @@map("users")
+}
+
+model Profile {
+  userId Int  @id @unique
+  user   User @relation(fields: [userId], references: [id])
+
+  coverPhoto     String?
+  profilePicture String?
+  birthDate      DateTime?
+  description    String?
+
+  street   String?
+  postCode String?
+  city     String?
 }
 
 enum UserRole {
