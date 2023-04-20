@@ -23,6 +23,37 @@ export class ProfileRepository {
     return this.mapToProfile(profile, null);
   }
 
+  async searchProfileByFullName(fullName: string): Promise<Profile[]> {
+    const [firstName, lastName] = fullName.split(' ');
+    const profile = await this.prismaService.profile.findMany({
+      where: {
+        OR: [
+          {
+            user: {
+              firstName: {
+                contains: firstName,
+                mode: 'insensitive'
+              }
+            }
+          },
+          {
+            user: {
+              lastName: {
+                contains: lastName ?? firstName,
+                mode: 'insensitive'
+              }
+            }
+          }
+        ]
+      },
+      include: {
+        user: true
+      }
+    });
+
+    return this.mapToProfileArray(profile);
+  }
+
   async uploadProfilePicture(userId: number, profilePicturePath: string): Promise<Profile> {
     const profile = await this.prismaService.profile.update({
       where: {
@@ -77,5 +108,9 @@ export class ProfileRepository {
 
   private mapToProfile(profile: DbProfile, user: User): Profile {
     return new Profile(profile, user);
+  }
+
+  private mapToProfileArray(profileArray: (DbProfile & { user: User })[]): Profile[] {
+    return profileArray.map(profile => this.mapToProfile(profile, profile.user))
   }
 }

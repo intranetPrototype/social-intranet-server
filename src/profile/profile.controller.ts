@@ -1,8 +1,8 @@
-import { Body, ClassSerializerInterceptor, Controller, FileTypeValidator, Get, Header, MaxFileSizeValidator, ParseFilePipe, Post, Put, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Body, ClassSerializerInterceptor, Controller, FileTypeValidator, Get, Header, MaxFileSizeValidator, ParseFilePipe, Post, Put, Query, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { Profile } from './model';
-import { GetCurrentUserId, Public } from 'src/common';
+import { GetCurrentUserId } from 'src/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
-import { GetProfileQuery } from './queries';
+import { GetProfileQuery, SearchProfileByFullNameQuery } from './queries';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UpdateProfileCommand, UploadCoverPhotoCommand, UploadProfilePictureCommand } from './commands/impl';
 import { UpdateProfileRequest } from './model/';
@@ -27,6 +27,18 @@ export class ProfileController {
     return this.queryBus.execute<GetProfileQuery, Profile>(
       new GetProfileQuery(userId)
     );
+  }
+
+  @UseInterceptors(ClassSerializerInterceptor)
+  @Get('search')
+  @ApiOkResponse({
+    description: 'Profiles searched by fullName',
+    type: Array<Profile>
+  })
+  searchUserProfile(@Query('searchString') searchString: string): Promise<Profile[]> {
+    return this.queryBus.execute<SearchProfileByFullNameQuery, Profile[]>(
+      new SearchProfileByFullNameQuery(searchString)
+    )
   }
 
   @Post('upload/cover-photo')
